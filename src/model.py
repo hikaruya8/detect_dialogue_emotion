@@ -38,7 +38,7 @@ def numpy2tensor():
 
     torch_input_vectors = torch.FloatTensor(input_vectors).to(device)
 
-    # import pdb;pdb.set_trace()
+    import pdb;pdb.set_trace()
 
     with open('torch_input_vectors.pickle', 'wb') as f:
         pickle.dump(torch_input_vectors, f, protocol=4)
@@ -61,6 +61,7 @@ class Autoencoder(nn.Module): #nn.Moduleを継承
         x = F.sigmoid(self.dropout(self.fc2(x)))
         x = F.sigmoid(self.dropout(self.fc2(x)))
         x = F.sigmoid(self.dropout(self.fc3(x)))
+
         return x
 
 
@@ -115,6 +116,7 @@ def train_model(net):
     train_loader = DataLoader(torch_input_vectors, batch_size=params.batch_size, shuffle=True)
 
     import pdb;pdb.set_trace()
+
 
     unsuper_criterion = nn.MSELoss()
     # optimizer = optim.SGD(net.parameters(), lr=params.learning_rate)
@@ -172,8 +174,6 @@ def train_model(net):
 
         train_loss_list.append(train_loss)
 
-        import pdb;pdb.set_trace()
-
 
 
             # self.batch_size = params.batch_size
@@ -224,7 +224,7 @@ if __name__ == '__main__':
     net = Autoencoder(params.input_size, params.hidden_size, params.unsupervised_output_size)
     net = net.to(device)
     # # 複数GPU使用宣言
-    # if device == 'cuda':
-    #     net = torch.nn.DataParallel(net) # make parallel
-    #     torch.backends.cudnn.benchmark = True
+    if device == 'cuda':
+        net = torch.nn.DataParallel(net) # make parallel
+        torch.backends.cudnn.benchmark = True
     train_model(net)
