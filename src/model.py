@@ -38,6 +38,7 @@ def numpy2tensor():
 
     torch_input_vectors = torch.FloatTensor(input_vectors).to(device)
 
+
     import pdb;pdb.set_trace()
 
     with open('torch_input_vectors.pickle', 'wb') as f:
@@ -50,16 +51,16 @@ class Autoencoder(nn.Module): #nn.Moduleを継承
         self.input_size = params.input_size
         self.hidden_size = params.hidden_size
         self.unsupervised_output_size = params.unsupervised_output_size
-        self.fc1 = nn.Linear(params.input_size, params.hidden_size) # fc = fully connected layer
-        self.fc2 = nn.Linear(params.hidden_size, params.hidden_size)
+        self.fc1 = nn.Linear(input_size, hidden_size) # fc = fully connected layer
+        self.fc2 = nn.Linear(hidden_size, hidden_size)
+        self.fc3 = nn.Linear(hidden_size, unsupervised_output_size)
         self.dropout = nn.Dropout(0.75)
         self.unsuper_criterion = nn.MSELoss()
 
     def forward(self, x):
         x = F.sigmoid(self.dropout(self.fc1(x)))
         x = F.sigmoid(self.dropout(self.fc2(x)))
-        x = F.sigmoid(self.dropout(self.fc2(x)))
-        x = F.sigmoid(self.dropout(self.fc1(x)))
+        x = F.sigmoid(self.dropout(self.fc3(x)))
         return x
 
 
@@ -171,7 +172,7 @@ def train_model(net):
 
         train_loss_list.append(train_loss)
 
-        import pdb;pdb.set_trace()
+        # import pdb;pdb.set_trace()
 
 
 
