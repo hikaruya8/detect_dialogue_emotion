@@ -38,16 +38,7 @@ def numpy2tensor():
 
     torch_input_vectors = torch.FloatTensor(input_vectors).to(device)
 
-<<<<<<< HEAD
     import pdb;pdb.set_trace()
-=======
-<<<<<<< HEAD
-
-    import pdb;pdb.set_trace()
-=======
-    # import pdb;pdb.set_trace()
->>>>>>> 9f66b8338a6c1570acf689a9cb359250dc30da92
->>>>>>> origin/master
 
     with open('torch_input_vectors.pickle', 'wb') as f:
         pickle.dump(torch_input_vectors, f, protocol=4)
@@ -70,10 +61,7 @@ class Autoencoder(nn.Module): #nn.Moduleを継承
         x = F.sigmoid(self.dropout(self.fc2(x)))
         x = F.sigmoid(self.dropout(self.fc2(x)))
         x = F.sigmoid(self.dropout(self.fc3(x)))
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/master
         return x
 
 
@@ -127,12 +115,9 @@ def train_model(net):
 
     train_loader = DataLoader(torch_input_vectors, batch_size=params.batch_size, shuffle=True)
 
-<<<<<<< HEAD
     import pdb;pdb.set_trace()
 
 
-=======
->>>>>>> origin/master
     unsuper_criterion = nn.MSELoss()
     # optimizer = optim.SGD(net.parameters(), lr=params.learning_rate)
     optimizer = torch.optim.Adam(net.parameters(), lr=params.learning_rate)
@@ -235,7 +220,6 @@ def train_model(net):
 
 
 if __name__ == '__main__':
-<<<<<<< HEAD
     # numpy2tensor()
     net = Autoencoder(params.input_size, params.hidden_size, params.unsupervised_output_size)
     net = net.to(device)
@@ -243,13 +227,4 @@ if __name__ == '__main__':
     if device == 'cuda':
         net = torch.nn.DataParallel(net) # make parallel
         torch.backends.cudnn.benchmark = True
-=======
-    numpy2tensor()
-    net = Autoencoder()
-    net = net.to(device)
-    # # 複数GPU使用宣言
-    # if device == 'cuda':
-    #     net = torch.nn.DataParallel(net) # make parallel
-    #     torch.backends.cudnn.benchmark = True
->>>>>>> origin/master
     train_model(net)
