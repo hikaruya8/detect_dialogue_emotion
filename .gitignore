@@ -1,0 +1,10 @@
+__MACOSX/
+checkpoint/
+src/.data/
+/sample/
+.vector_cache/
+/data/
+*.pickle
+*.txt
+*.model
+*.npy
