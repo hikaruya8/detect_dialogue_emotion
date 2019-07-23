@@ -38,8 +38,12 @@ def numpy2tensor():
 
     torch_input_vectors = torch.FloatTensor(input_vectors).to(device)
 
+<<<<<<< HEAD
 
     import pdb;pdb.set_trace()
+=======
+    # import pdb;pdb.set_trace()
+>>>>>>> 9f66b8338a6c1570acf689a9cb359250dc30da92
 
     with open('torch_input_vectors.pickle', 'wb') as f:
         pickle.dump(torch_input_vectors, f, protocol=4)
@@ -59,6 +63,7 @@ class Autoencoder(nn.Module): #nn.Moduleを継承
 
     def forward(self, x):
         x = F.sigmoid(self.dropout(self.fc1(x)))
+        x = F.sigmoid(self.dropout(self.fc2(x)))
         x = F.sigmoid(self.dropout(self.fc2(x)))
         x = F.sigmoid(self.dropout(self.fc3(x)))
         return x
@@ -111,8 +116,6 @@ class SupervisedTrain(nn.Module):
 def train_model(net):
     with open('torch_input_vectors.pickle', 'rb') as f:
         torch_input_vectors = pickle.load(f)
-
-    # import pdb;pdb.set_trace()
 
     train_loader = DataLoader(torch_input_vectors, batch_size=params.batch_size, shuffle=True)
 
@@ -171,8 +174,6 @@ def train_model(net):
         print('Epoch [{}/{}], Loss: {loss}'.format(epoch+1, params.num_epochs, loss=avg_train_loss))
 
         train_loss_list.append(train_loss)
-
-        # import pdb;pdb.set_trace()
 
 
 
