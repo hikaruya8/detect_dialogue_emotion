@@ -7,12 +7,4 @@ src/.data/
 *.pickle
 *.txt
 *.model
-<<<<<<< HEAD
 *.npy
-=======
-*.npy
-<<<<<<< HEAD
->>>>>>> origin/master
-=======
->>>>>>> 9f66b8338a6c1570acf689a9cb359250dc30da92
->>>>>>> origin/master

@@ -38,21 +38,21 @@ def numpy2tensor():
 
     torch_input_vectors = torch.FloatTensor(input_vectors).to(device)
 
-    import pdb;pdb.set_trace()
+    # import pdb;pdb.set_trace()
 
     with open('torch_input_vectors.pickle', 'wb') as f:
         pickle.dump(torch_input_vectors, f, protocol=4)
 
 
 class Autoencoder(nn.Module): #nn.Moduleを継承
-    def __init__(self, input_size, hidden_size, unsupervised_output_size):
+    def __init__(self, input_size, hidden_size, output_size):
         super(Autoencoder, self).__init__()
-        self.input_size = params.input_size
-        self.hidden_size = params.hidden_size
-        self.unsupervised_output_size = params.unsupervised_output_size
+        self.input_size = input_size
+        self.hidden_size = hidden_size
+        self.output_size = output_size
         self.fc1 = nn.Linear(input_size, hidden_size) # fc = fully connected layer
         self.fc2 = nn.Linear(hidden_size, hidden_size)
-        self.fc3 = nn.Linear(hidden_size, unsupervised_output_size)
+        self.fc3 = nn.Linear(hidden_size, output_size)
         self.dropout = nn.Dropout(0.75)
         self.unsuper_criterion = nn.MSELoss()
 
@@ -65,58 +65,32 @@ class Autoencoder(nn.Module): #nn.Moduleを継承
         return x
 
 
-
-
-    # def __init__(self):
-    #     super(Autoencoder, self).__init__()
-    #     self.encoder = nn.Sequential(
-    #         nn.Linear(params.input_size, params.hidden_size),
-    #         nn.Sigmoid(),
-    #         nn.Dropout(0.75),
-    #         nn.Linear(params.hidden_size, params.hidden_size),
-    #         nn.Sigmoid(),
-    #         nn.Dropout(0.75)
-    #         )
-
-    #     self.decoder = nn.Sequential(
-    #         nn.Linear(params.hidden_size, params.hidden_size),
-    #         nn.Sigmoid(),
-    #         nn.Dropout(0.75),
-    #         nn.Linear(params.hidden_size, params.unsupervised_output_size),
-    #         nn.Sigmoid(),
-    #         nn.Dropout(0.75)
-    #         )
-
-    # def forward(self, x):
-    #     x = self.encoder(x)
-    #     x = self.decoder(x)
-    #     return x
-
 class SupervisedTrain(nn.Module):
-    def __init__(self):
+    def __init__(self, batch_size, input_size, hidden_size, output):
         super(SupervisedTrain, self).__init__()
-        self.encoder = nn.Sequential(
-            nn.Linear(params.input_size, params.hidden_size),
-            nn.Sigmoid(),
-            nn.Dropout(0.75),
-            nn.Linear(params.hidden_size, params.hidden_size),
-            nn.Sigmoid(),
-            nn.Dropout(0.75)
-            )
-        self.classifier = nn.Sequential(
-            )
+        self.batch_size = batch_size
+        self.input_size = input_size
+        self.hidden_size = hidden_size
+        self.output_size = output_size
+        self.fc1 = nn.Linear(input_size, hidden_size)
+        self.fc2 = nn.Linear(hidden_size, hidden_size)
+        self.dropout = nn.Dropout(0.75)
+        self.super_criterion = nn.CrossEntropyLoss()
 
-        return x
+    def forward(self, x):
+        x = F.sigmoid(self.dropout(self.fc1(x)))
+        x = F.sigmoid(self.dropout(self.fc2(x)))
+        out = x
+        return out
 
 
-def train_model(net):
+def train_autoencoder(net): # left part
     with open('torch_input_vectors.pickle', 'rb') as f:
         torch_input_vectors = pickle.load(f)
 
     train_loader = DataLoader(torch_input_vectors, batch_size=params.batch_size, shuffle=True)
 
-    import pdb;pdb.set_trace()
-
+    # import pdb;pdb.set_trace()
 
     unsuper_criterion = nn.MSELoss()
     # optimizer = optim.SGD(net.parameters(), lr=params.learning_rate)
@@ -142,6 +116,7 @@ def train_model(net):
         net.train()
 
         for i, data in enumerate(tqdm(train_loader)):
+            net = net.to(device)
             # 順伝播の計算
             outputs = net(data)
             # lossの計算
@@ -175,56 +150,70 @@ def train_model(net):
         train_loss_list.append(train_loss)
 
 
+def train_supervised(net):
+    with open('torch_input_vectors', 'rb') as f:
+        torch_input_vectors = pickle.load(f)
 
-            # self.batch_size = params.batch_size
-            # self.hidden_size = hidden_size
-            # self.output_size = unsupervised_output_size
-            # self.vocab_size = vocab_size #単語数
-            # self.embed = nn.Embedding(vocab_size, embedding_length)
-            # self.fc1 = nn.Linear(input_size, hidden_size) # Encoder1層目
-            # self.fc2 = nn.Linear(hidden_size, hidden_size) # Encoder2層目
-            # self.fc3 = nn.Linear(hidden_size, hidden_size) # Decoder2層目
-            # self.fc4 = nn.Linear(hidden_size, unsupervised_output_size) # Decoder1層目
-        #     self.dropout = nn.Dropout(0.75)
+    train_loader = DataLoader(torch_input_vectors, batch_size=params.batch_size, shuffle=True)
+    test_loader = 
 
-        # def forward(self, x):
-        #     # self.embed(x)
-        #     # # 初期隠れ状態とセル状態を設定
-        #     # h0 = torch.zeros(1, self.batch_size, self.hidden_size).to(device)
-        #     # c0 = torch.zeros(1, self.batch_size, self.hidden_size).to(device)
+    optimizer = torch.optim.Adam(net.parameters(), lr=params.learning_rate)
 
-        #     x = F.sigmoid(self.fc1(x))
-        #     x = F.sigmoid(self.fc2(x))
-        #     x = F.sigmoid(self.fc3(x))
-        #     out = F.sigmoid(self.fc4(x))
-        #     return out
+    train_loss_list = []
+    train_acc_list = []
+    val_loss_list = []
+    val_acc_list = []
 
-    # net = UnsupervisedTrain(batch_size, hidden_size, unsupervised_output_size, embedding_length, text_embeddings)
-    # net = net.to(device)
+    for epoch in range(num_epochs):
+        train_loss = 0
+        train_acc = 0
+        val_loss = 0
+        val_acc_list = 0
 
-    # super_criterion = nn.CrossEntropyLoss()
-    # optimizer = optim.SGD(net.parameters(), Ir=0.001, momentum=0.9, weight_decay=5e-4)
+        # train
+        net.train()
+        for i ,data in enumerate(train_loader):
+            net = net.to(device)
+            labels = 
+            labels = labels.to(device)
+            optim.zero_grad()
+            outputs = net(data)
+            loss = super_criterion(outputs, labels)
+            train_loss += loss.item()
+            train_acc += ()
+            loss.backward()
+            optim.step()
+
+    net.eval()
+    with torch.no_grad():
+        total = 0
+        test_acc = 0
+        for data in test_loader:
+            data = data.to(device)
+            labels = data.label
+            labels = labels.to(device)
+
+            outputs = net(data)
+            test_acc +=
+            total += 
+        print('精度: {} %'.format(100 * test_acc / total))
 
 
-    # for epoch in range(num_epochs):
-    #     # trainモード
-    #     net.train()
 
-    #     # 勾配をリセット
-    #     optimizer.zero_grad()
-    #     # 順伝播の計算
-    #     output = net(x)
-    #     loss = unsuper_criterion(output, y)
-    #     loss.backward()
-    #     optimizer.step()
+
 
 
 if __name__ == '__main__':
     # numpy2tensor()
-    net = Autoencoder(params.input_size, params.hidden_size, params.unsupervised_output_size)
+    # net = Autoencoder(params.input_size, params.hidden_size, params.unsupervised_output_size)
+    # net = net.to(device)
+
+    net = SupervisedTrain(params.batch_size, params.input_size, params.hidden_size, params.output)
     net = net.to(device)
-    # # 複数GPU使用宣言
+
+    # 複数GPU使用宣言
     if device == 'cuda':
         net = torch.nn.DataParallel(net) # make parallel
         torch.backends.cudnn.benchmark = True
-    train_model(net)
+    # train_model(net)
+    train_supervised(net)
