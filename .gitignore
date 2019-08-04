@@ -8,3 +8,4 @@ src/.data/
 *.txt
 *.model
 *.npy
+sftp-config.json
