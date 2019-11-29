@@ -1,2 +1,6 @@
 # detect_dialogue_emotion
-自分の論文
+Detect Multiple Emotion in Conversation.
+
+# Recuiremetnts
+python3.6
+
