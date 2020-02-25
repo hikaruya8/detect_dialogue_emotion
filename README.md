@@ -1,5 +1,5 @@
 # detect_dialogue_emotion
-Detect Multiple Emotion in Conversation.
+Detect Multiple Emotion in Conversation.  
 This is the re-imprementation of Phan's Model(2018).
 
 # Dataset
