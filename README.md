@@ -1,5 +1,6 @@
 # detect_dialogue_emotion
 Detect Multiple Emotion in Conversation.
+This is the re-imprementation of Phan's Model(2018).
 
 # Dataset
 You need to get dataset of EMTC (https://www.aclweb.org/anthology/L18-1418/)  
